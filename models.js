@@ -9,19 +9,33 @@ async function fetchModels() {
 }
 
 async function renderModels() { 
-    const models = await fetchModels(); 
+  try {
+    const models = await fetchModels();
     const modelsList = document.querySelector("#models-list");
-
-    const modelsHTML = models.map((model) => { return `<div class="model">
-      <img src="https://car-rental-api.up.railway.app/${
-        model.image
-      }" alt="" class="model__img" />
+    const modelsSort = document.querySelector("#models-sort").value;
+  
+    modelsList.innerHTML = `<i class="fa-solid fa-spinner models__list__spinner"></i>`;
+  
+    if (modelsSort === 'RATING') {
+      models.sort((a, b) => b.rating - a.rating);
+    }
+    else if (modelsSort === 'LOW_TO_HIGH') {
+      models.sort((a, b) => a.per_day_price - b.per_day_price);
+    }
+    else if (modelsSort === 'HIGH_TO_LOW') {
+      models.sort((a, b) => b.per_day_price - a.per_day_price);
+    }
+  
+    const modelsHTML = models.map((model) => {
+      return `<div class="model">
+      <img src="https://car-rental-api.up.railway.app/${model.image
+        }" alt="" class="model__img" />
       <div class="model__details model__details-1">
         <h3 class="model__details__name">${model.make} ${model.model}</h3>
         <h4 class="model__details__price">
           $${Math.floor(
-            model.per_day_price
-          )} <span class="model__details__price__span">per day</span>
+          model.per_day_price
+        )} <span class="model__details__price__span">per day</span>
         </h4>
       </div>
       <div class="model__details model__details-2">
@@ -46,9 +60,16 @@ async function renderModels() {
         <span class="model__btn__span">Book Ride</span>
         <i class="fa-regular fa-circle-check model__btn__icon"></i>
       </button>
-    </div>`;}).join('');
+    </div>`;
+    }).join('');
 
     modelsList.innerHTML = modelsHTML;
+  }
+
+  catch (e) { 
+    alert(e);
+  }
+    
 
 }
 
